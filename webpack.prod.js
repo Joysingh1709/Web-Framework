@@ -29,6 +29,12 @@ module.exports = merge(common, {
             })
         ]
     },
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        publicPath: '/',
+        watchContentBase: true,
+        historyApiFallback: true
+    },
     plugins: [
         new MiniCssExtractPlugin({ filename: "[name].[contenthash].css" }),
         new CleanWebpackPlugin()
