@@ -29,11 +29,6 @@ module.exports = merge(common, {
             })
         ]
     },
-    // devtool: false,
-    devServer: {
-        contentBase: path.join(__dirname, 'dist'),
-        publicPath: '/'
-    },
     plugins: [
         new MiniCssExtractPlugin({ filename: "[name].[contenthash].css" }),
         new CleanWebpackPlugin()
