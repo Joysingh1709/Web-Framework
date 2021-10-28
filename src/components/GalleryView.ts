@@ -1,6 +1,8 @@
-export default function GalleryView(params) {
+import { Component } from "../core/core";
 
-    const state = {
+export default function GalleryView(params: any): Component {
+
+    const state: any = {
         data: [
             "1",
             "2",

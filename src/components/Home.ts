@@ -1,5 +1,7 @@
-export default function Home() {
-    function makeid(length) {
+import { Component } from "../core/core";
+
+export default function Home(): Component {
+    function makeid(length: number): string {
         var result = '';
         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         var charactersLength = characters.length;
@@ -24,19 +26,19 @@ export default function Home() {
         selector: 'app-home',
         view: () => {
             return `
-                <h1>{{title}}</h1>
-                <ul>
-                    <li><a href="/" class="nav-link" data-link>Home</a></li>
-                    <li><a href="/gallery" class="nav-link" data-link>Gallery</a></li>
-                    <li><a href="/gallery/2" class="nav-link" data-link>Gallery View</a></li>
-                    <li><a href="/t-price" class="nav-link" data-link>Total Price Calculator</a></li>
-                </ul>
-                Hello {{world}}!
+            <h1>{{title}}</h1>
+            <ul>
+                <li><a href="/" class="nav-link" data-link>Home</a></li>
+                <li><a href="/gallery" class="nav-link" data-link>Gallery</a></li>
+                <li><a href="/gallery/2" class="nav-link" data-link>Gallery View</a></li>
+                <li><a href="/t-price" class="nav-link" data-link>Total Price Calculator</a></li>
+            </ul>
+            Hello {{world}}!
 
-                {{data}}
+            {{data}}
 
-                <app-gallery></app-gallery>
-                <app-totalprice></app-totalprice>
+            <app-gallery></app-gallery>
+            <app-totalprice></app-totalprice>
             `;
         }, state: () => state
     }

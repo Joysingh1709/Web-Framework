@@ -1,4 +1,6 @@
-export default function Gallery(params) {
+import { Component } from "../core/core";
+
+export default function Gallery(params: any): Component {
     return {
         selector: 'app-gallery',
         view: () => {
