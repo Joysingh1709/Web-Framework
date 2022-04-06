@@ -1,6 +1,21 @@
 class CustomElementClass extends HTMLElement {
     constructor() {
         super();
+        //         console.log("this : ", this.attributes);
+        // 
+        //         const clickBtn = this.attributes.getNamedItem("click")
+        // 
+        //         if (clickBtn) {
+        // 
+        //             console.log(this.nodeName + " has : ", clickBtn)
+        // 
+        //         }
+
+        // this.addEventListener('click', e => {
+        //     console.log("click event");
+        // })
+
+
         // Check to see if observedAttributes are defined and has length
         if (this.constructor.prototype.observedAttributes && this.constructor.prototype.observedAttributes.length) {
             this.constructor.prototype.observedAttributes.forEach((attribute: string) => {

@@ -13,7 +13,7 @@ export type Route = {
 }
 
 export async function router(data?: any) {
-    if (data) { console.log("data passed to update view : ", data) }
+    // if (data) { console.log("data passed to update view : ", data) }
     const potentialMatches = ROUTES.map((route): RouteMatch => {
         return {
             route: route,
@@ -31,7 +31,7 @@ export async function router(data?: any) {
         };
     }
 
-    console.log(match);
+    // console.log(match);
 
     const view = new match.route.view(getParams(match));
 

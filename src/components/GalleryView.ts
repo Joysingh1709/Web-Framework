@@ -1,4 +1,4 @@
-import { Component } from "../core/core";
+import { Component } from "../core/Component";
 
 export default function GalleryView(params: any): Component {
 
@@ -23,6 +23,7 @@ export default function GalleryView(params: any): Component {
                     {{/data}}
                 <a href="/" class="nav-link" data-link>Home</a>
             `;
-        }, state: () => state
+        },
+        style: () => ``, state: () => state
     }
 };

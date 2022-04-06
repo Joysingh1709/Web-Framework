@@ -1,4 +1,4 @@
-import { Component } from "../core/core";
+import { Component } from "../core/Component";
 
 export default function TotalPrice(params: any): Component {
   const state = {
@@ -34,6 +34,8 @@ export default function TotalPrice(params: any): Component {
                 <h1>Total : {{total}}</h1>
 
             `;
-    }, state: () => state
+    },
+    style: () => ``,
+    state: () => state
   }
 };
