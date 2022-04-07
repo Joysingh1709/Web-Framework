@@ -1,4 +1,4 @@
-import { Component } from "../core/Component";
+import { Component } from "../../lib/models/Component";
 
 export default function Home(): Component {
     // function makeid(length: number): string {
@@ -26,8 +26,10 @@ export default function Home(): Component {
         selector: 'app-home',
         view: () => {
             return `
-            <h1 class="home-title">{{title}}</h1>
-            <ul>
+            <h1 class="home-title p-2">{{title}}1</h1>
+            <h1 id="ul-1" class="home-title p-2">{{title}}2</h1>
+            <h1 class="home-title p-2">{{title}}3</h1>
+            <ul id="ul-1">
                 <li><a href="/" class="nav-link" data-link>Home</a></li>
                 <li class="link-ele"><a href="/gallery" class="nav-link" data-link>Gallery</a></li>
                 <li><a href="/gallery/2" class="nav-link" data-link>Gallery View</a></li>
@@ -44,17 +46,42 @@ export default function Home(): Component {
 
             <app-button (onClick)="{onClickFn()}"></app-button>
 
-            <app-gallery class="gallery"></app-gallery>
+            <app-gallery class="gallery1"></app-gallery>
             <app-totalprice title="this is a title on app-total price" (onClick)="{onClickFn(data, name)}"></app-totalprice>
-            <app-gallery gallery></app-gallery>
+            <app-gallery class="gallery2" gallery></app-gallery>
             `;
         }, style: () => {
             return `
-            .home-title {
+            .home-title{
                 color: red;
             }
-            .gallery {
+            .home-title:hover{
+                color: #ffffff;
+            }
+            #ul-1{
+                border: 1px solid black;
+            }
+            #ul-1 > li{
+                font-style: italic;
+            }
+            .gallery1{
                 color: blue;
+            }
+            .gallery2{
+                color: purple;
+            }
+            li{
+                color: red;
+            }
+            .nav-link{
+                color: green !important;
+                font-weight: bold;
+                font-size: 1.5rem;
+            }
+            .nav-link:hover{
+                color: red !important;
+                font-weight: bold;
+                font-size: 1.5rem;
             }
             `;
         }, state: () => state

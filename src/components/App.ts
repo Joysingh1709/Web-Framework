@@ -1,4 +1,4 @@
-import { Component } from "../core/Component";
+import { Component } from "../../lib/models/Component";
 
 export default function App(): Component {
 

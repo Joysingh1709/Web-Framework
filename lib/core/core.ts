@@ -1,24 +1,30 @@
 import Mustache from 'mustache';
-import { Props } from './Props';
+import { Props } from '../models/Props';
 // import CustomElementClass from './ComponentFactory';
-import { router } from './Router'
+import { router } from '../router/Router'
 
-import { Components } from '../Declarations';
+import { Components } from '../../src/Declarations';
 
 import { toH } from 'hast-to-hyperscript';
 import h from 'hyperscript';
 
 import { fromDom } from 'hast-util-from-dom';
-import { Component } from './Component';
+import { Component } from '../models/Component';
+import { minify } from 'csso';
 
 let target: any | Function;
 export default class CoreFramework {
 
     propsArr: Props[] = [];
 
+    pseudoClassList: string[] = [":hover", ":active", ":focus", ":visited", ":link", ":disabled", ":enabled", ":checked", ":indeterminate", ":in-range",
+        ":out-of-range", ":read-only", ":read-write", ":required", ":optional", ":invalid", ":valid"];
+
     compTree: any = {};
 
     tempCompTree: any[] = [];
+
+    encapsulatedCSSList: string[] = [];
 
     constructor() { }
 
@@ -81,6 +87,12 @@ export default class CoreFramework {
 
         console.log("tempCompTree : ", this.tempCompTree[0]);
 
+        this.encapsulatedCSSList.forEach((css: string) => {
+            const style = document.createElement("style");
+            style.textContent = css;
+            document.head.appendChild(style);
+        });
+
         document.querySelector("#__app").innerHTML = toH(h, this.tempCompTree[0], { space: 'html' }).outerHTML;
 
     }
@@ -88,15 +100,15 @@ export default class CoreFramework {
     registerComponent(r: Component): any {
         const data: any = r.state() ? r.state() : {};
         const html: string = Mustache.render(r.view(), data);
-        const css: string = r.style();
+        let css: string = r.style() ? minify(r.style(), { restructure: false, comments: false }).css : null;
+
+        let styleSheet: { class: any, id: any, tag: any } = {
+            class: {},
+            id: {},
+            tag: {}
+        };
 
         console.warn(r.selector);
-        // console.log("css for " + r.selector + " : ", css);
-        // To JSON
-        // var json = CSSJSON.toJSON(cssString);
-
-        // To CSS
-        // var css = CSSJSON.toCSS(jsonObject);
 
         const tree = this.createTreeNode(html, r.selector);
 
@@ -124,22 +136,101 @@ export default class CoreFramework {
                         e.properties[newProp.propId as string] = "";
                     }
 
-                    const recursivelyParseCSS = (tree: any) => {
-                        console.log("tree : ", tree);
-                    }
-
-                    recursivelyParseCSS(e);
-
-
                 }
             }
+
         });
 
-        console.log(r.selector + " tree : ", tree);
+        const recursivelyParseCSS = (child: any[]) => {
+            child.forEach((e2: any) => {
+                if (e2.type !== 'text') {
+                    if (e2.properties.hasOwnProperty("className")) {
+
+                        const ele2: string[] = e2.properties.className;
+
+                        ele2.forEach((s: string) => {
+                            if (s && css) {
+                                // chacking if the class is there in components css
+                                // and if class is added on multiple elements or not
+                                if (css.includes("." + s)) {
+
+                                    const id = "[" + Object.keys(e2.properties).find((r: string) => r.includes("_hy-ghost_")) + "]";
+                                    styleSheet.class = { ...styleSheet.class, [s]: styleSheet.class[s] ? [...styleSheet.class[s], id] : [id] };
+                                    // console.log("stylesheet : ", styleSheet);
+
+
+                                    // if (css[css.indexOf("." + s) + ("." + s).length] === '{') {
+                                    //     css = css.replace("." + s, "." + s + "[" + Object.keys(e2.properties).find((r: string) => r.includes("_hy-ghost_")) + "]");
+                                    // } else if (css[css.indexOf("." + s) + ("." + s).length] === '[') {
+                                    //     css = this.insertAt(css, css.indexOf("." + s) + ("." + s).length, "[" + Object.keys(e2.properties).find((r: string) => r.includes("_hy-ghost_")) + "],");
+                                    // }
+                                }
+                            }
+                        });
+                    }
+                    if (css && e2.properties.hasOwnProperty("id")) {
+                        const eleId: string = e2.properties.id;
+                        if (css.includes("#" + eleId)) {
+
+                            styleSheet.id = { ...styleSheet.id, [eleId]: styleSheet.id[eleId] ? [...styleSheet.id[eleId], "[" + Object.keys(e2.properties).find((r: string) => r.includes("_hy-ghost_")) + "]"] : ["[" + Object.keys(e2.properties).find((r: string) => r.includes("_hy-ghost_")) + "]"] };
+                            // console.log("stylesheet : ", styleSheet);
+
+                            // if (css[css.indexOf("#" + eleId) + ("#" + eleId).length] === '{') {
+                            //     css = css.replace("#" + eleId, "#" + eleId + "[" + Object.keys(e2.properties).find((r: string) => r.includes("_hy-ghost_")) + "]");
+                            // } else if (css[css.indexOf("#" + eleId) + ("#" + eleId).length] === '[') {
+                            //     css = this.insertAt(css, css.indexOf("#" + eleId) + ("#" + eleId).length, "[" + Object.keys(e2.properties).find((r: string) => r.includes("_hy-ghost_")) + "],");
+                            // }
+
+                        }
+                    }
+                    if (css && css.includes("}" + e2.tagName + "{")) {
+
+                        if (!Components.declarations.find((r: Component) => r.selector === e2.tagName)) {
+                            styleSheet.tag = { ...styleSheet.tag, [e2.tagName]: styleSheet.tag[e2.tagName] ? [...styleSheet.tag[e2.tagName], "[" + Object.keys(e2.properties).find((r: string) => r.includes("_hy-ghost_")) + "]"] : ["[" + Object.keys(e2.properties).find((r: string) => r.includes("_hy-ghost_")) + "]"] };
+                            // console.log("stylesheet : ", styleSheet);
+                        }
+
+                    }
+                    if (e2.children.length > 0 && !Components.declarations.find((r: Component) => r.selector === e2.tagName)) {
+                        recursivelyParseCSS(e2.children);
+                    }
+                }
+            });
+        }
+
+        recursivelyParseCSS(tree.children);
+
+        // from stylesheet object adding ecapsulated classes to css
+        Object.keys(styleSheet.class).forEach((key: string) => {
+            css = css.replaceAll("." + key + "{", "." + key + styleSheet.class[key].join(",") + "{");
+            this.pseudoClassList.forEach((p: string) => {
+                css = css.replaceAll(new RegExp("." + key + p + "{", "g"), "." + key + styleSheet.class[key].join(p + ",") + p + "{");
+            });
+        });
+
+        // from stylesheet object adding ecapsulated ids to css
+        Object.keys(styleSheet.id).forEach((key: string) => {
+            css = css.replaceAll("#" + key + "{", "#" + key + styleSheet.id[key].join(",") + "{");
+            this.pseudoClassList.forEach((p: string) => {
+                css = css.replaceAll(new RegExp("#" + key + p + "{", "g"), "#" + key + styleSheet.id[key].join(p + ",") + p + "{");
+            });
+        });
+
+        // from stylesheet object adding ecapsulated element style to css
+        Object.keys(styleSheet.tag).forEach((key: string) => {
+            css = css.replaceAll(key + "{", key + styleSheet.tag[key].join(",") + "{");
+            this.pseudoClassList.forEach((p: string) => {
+                css = css.replaceAll(new RegExp(key + p + "{", "g"), key + styleSheet.tag[key].join(p + ",") + p + "{");
+            });
+        });
+
+        console.log("css for " + r.selector + " : ", css);
+
+        css ? this.encapsulatedCSSList.push(css) : null;
 
         const doc = toH(h, tree).outerHTML;
 
-        // console.log(r.selector + " : ", doc);
+        console.log("tree : ", tree);
 
         this.setState(data, r, doc);
 
@@ -152,6 +243,27 @@ export default class CoreFramework {
         // });
 
         return tree;
+    }
+
+    insertAt(str: string, index: number, value: string) {
+        return str.slice(0, index) + value + str.slice(index);
+    }
+
+    idxOfAllOccurrences(searchStr: string, str: string, caseSensitive?: boolean): number[] {
+        var searchStrLen = searchStr.length;
+        if (searchStrLen == 0) {
+            return [];
+        }
+        var startIndex = 0, index, indices = [];
+        if (!caseSensitive) {
+            str = str.toLowerCase();
+            searchStr = searchStr.toLowerCase();
+        }
+        while ((index = str.indexOf(searchStr, startIndex)) > -1) {
+            indices.push(index);
+            startIndex = index + searchStrLen;
+        }
+        return indices;
     }
 
     createTreeNode(html: string, selector: string): any {

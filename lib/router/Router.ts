@@ -1,4 +1,5 @@
 import Mustache from 'mustache';
+import path from 'path';
 import ROUTES from '../../src/routes';
 
 export type RouteMatch = {

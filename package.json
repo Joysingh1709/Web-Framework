@@ -11,7 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^16.11.6"
+    "@types/csso": "^5.0.0",
+    "@types/node": "^16.11.6",
+    "csso": "^4.2.0"
   },
   "devDependencies": {
     "@types/hyperscript": "^0.0.4",

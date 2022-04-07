@@ -4,7 +4,7 @@ import Gallery from './components/Gallery';
 import GalleryView from './components/GalleryView';
 import TotalPrice from './components/totalPrice';
 import Button from './components/Button';
-import { ComponentRegistry } from './core/ComponentRegistry';
+import { ComponentRegistry } from '../lib/models/ComponentRegistry';
 
 export const Components: ComponentRegistry = {
     declarations: [

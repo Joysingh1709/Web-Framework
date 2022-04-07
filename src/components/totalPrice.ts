@@ -1,4 +1,4 @@
-import { Component } from "../core/Component";
+import { Component } from "../../lib/models/Component";
 
 export default function TotalPrice(params: any): Component {
   const state = {
@@ -20,7 +20,7 @@ export default function TotalPrice(params: any): Component {
     selector: 'app-totalprice',
     view: () => {
       return `
-                <h1>Hello from Total Price component</h1>
+                <h1 class="home-title p-2">Hello from Total Price component</h1>
                 <a href="/" class="nav-link" data-link>Home</a>
                 <br/>
 
