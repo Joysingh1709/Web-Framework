@@ -1,6 +1,5 @@
 import Mustache from 'mustache';
 import { Props } from '../models/Props';
-// import CustomElementClass from './ComponentFactory';
 import { router } from '../router/Router'
 
 import { Components } from '../../src/Declarations';
@@ -85,7 +84,8 @@ export default class CoreFramework {
         });
         // -------------------------------------------------------------------------------------------------
 
-        console.log("tempCompTree : ", this.tempCompTree[0]);
+        console.warn("******************DOM Tree******************");
+        console.log("DOM Tree : ", this.tempCompTree[0]);
 
         this.encapsulatedCSSList.forEach((css: string) => {
             const style = document.createElement("style");
@@ -102,13 +102,9 @@ export default class CoreFramework {
         const html: string = Mustache.render(r.view(), data);
         let css: string = r.style() ? minify(r.style(), { restructure: false, comments: false }).css : null;
 
-        let styleSheet: { class: any, id: any, tag: any } = {
-            class: {},
-            id: {},
-            tag: {}
-        };
+        let styleSheet: { class: any, id: any, tag: any } = { class: {}, id: {}, tag: {} };
 
-        console.warn(r.selector);
+        console.warn("-----------" + r.selector + "-----------");
 
         const tree = this.createTreeNode(html, r.selector);
 
@@ -224,7 +220,7 @@ export default class CoreFramework {
             });
         });
 
-        console.log("css for " + r.selector + " : ", css);
+        // console.log("css for " + r.selector + " : ", css);
 
         css ? this.encapsulatedCSSList.push(css) : null;
 

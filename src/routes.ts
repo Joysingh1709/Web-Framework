@@ -6,6 +6,7 @@ import { Route } from '../lib/router/Router';
 import Button from './components/Button';
 
 const ROUTES: Route[] = [
+    // { path: '/', view: Home },
     { path: '/gallery', view: Gallery },
     { path: '/button', view: Button },
     { path: '/t-price', view: TotalPrice },

@@ -6,6 +6,7 @@
   "scripts": {
     "test": "npm test",
     "start:dev": "webpack serve --config webpack.dev.js --open",
+    "start:prod": "webpack serve --config webpack.prod.js",
     "build": "webpack --config webpack.prod.js"
   },
   "author": "",

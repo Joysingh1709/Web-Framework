@@ -26,9 +26,8 @@ export default function Home(): Component {
         selector: 'app-home',
         view: () => {
             return `
-            <h1 class="home-title p-2">{{title}}1</h1>
             <h1 id="ul-1" class="home-title p-2">{{title}}2</h1>
-            <h1 class="home-title p-2">{{title}}3</h1>
+
             <ul id="ul-1">
                 <li><a href="/" class="nav-link" data-link>Home</a></li>
                 <li class="link-ele"><a href="/gallery" class="nav-link" data-link>Gallery</a></li>
@@ -46,9 +45,7 @@ export default function Home(): Component {
 
             <app-button (onClick)="{onClickFn()}"></app-button>
 
-            <app-gallery class="gallery1"></app-gallery>
             <app-totalprice title="this is a title on app-total price" (onClick)="{onClickFn(data, name)}"></app-totalprice>
-            <app-gallery class="gallery2" gallery></app-gallery>
             `;
         }, style: () => {
             return `

@@ -1,3 +1,4 @@
+import { Component } from 'lib/models/Component';
 import Mustache from 'mustache';
 import path from 'path';
 import ROUTES from '../../src/routes';
@@ -26,18 +27,27 @@ export async function router(data?: any) {
 
     if (!match) {
         match = {
-            route: ROUTES[0],
-            isMatch: true,
+            route: null,
+            isMatch: false,
             result: null
         };
+    } else {
+        match.isMatch = true;
     }
 
-    // console.log(match);
+    console.log(match);
 
-    const view = new match.route.view(getParams(match));
+    if (match.isMatch) {
+        const view: Component = new match.route.view(getParams(match));
 
-    var rendered = Mustache.render(await view.view(), data ? data : await view.state());
-    document.querySelector("#__app").innerHTML = rendered;
+        console.log(view);
+
+        var rendered = Mustache.render(await view.view(), data ? data : await view.state());
+
+        document.querySelectorAll('router-out').forEach((routerOut: any) => {
+            routerOut.innerHTML = rendered;
+        });
+    }
 };
 
 export function pathToRegex(path: string): RegExp {
