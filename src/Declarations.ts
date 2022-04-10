@@ -1,18 +1,14 @@
-import Home from './components/Home';
+import LoginForm from './components/LoginForm';
+import Nav from './components/nav/Nav';
 import App from './components/App';
-import Gallery from './components/Gallery';
-import GalleryView from './components/GalleryView';
-import TotalPrice from './components/totalPrice';
 import Button from './components/Button';
 import { ComponentRegistry } from '../lib/models/ComponentRegistry';
 
 export const Components: ComponentRegistry = {
     declarations: [
-        Home(),
-        Gallery(null),
-        GalleryView(null),
-        TotalPrice(null),
-        Button(null)
+        Nav(),
+        Button(),
+        LoginForm()
     ],
     bootStrap: App()
 }

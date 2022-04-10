@@ -1,4 +1,4 @@
-export interface Component {
+export type Component = {
     selector: string;
     view: () => string;
     state: () => any;

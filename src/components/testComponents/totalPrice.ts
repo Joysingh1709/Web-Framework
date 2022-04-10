@@ -1,4 +1,4 @@
-import { Component } from "../../lib/models/Component";
+import { Component } from "../../../lib/models/Component";
 
 export default function TotalPrice(params: any): Component {
   const state = {

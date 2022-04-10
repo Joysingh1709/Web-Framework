@@ -1,9 +1,17 @@
 const path = require('path');
+const glob = require('glob')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+var entries = glob.sync('./src/public/**/*.js').reduce((acc, path) => {
+    const name = path.split('/').pop().split('.')[0];
+    acc[name] = path
+    return acc
+}, {});
 
 module.exports = {
     entry: {
-        main: './src/main.ts'
+        main: './src/main.ts',
+        ...entries
     },
     module: {
         rules: [

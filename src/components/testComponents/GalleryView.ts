@@ -1,4 +1,4 @@
-import { Component } from "../../lib/models/Component";
+import { Component } from "../../../lib/models/Component";
 
 export default function GalleryView(params: any): Component {
 

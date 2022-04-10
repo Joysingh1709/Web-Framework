@@ -1,65 +1,93 @@
 import { Component } from 'lib/models/Component';
 import Mustache from 'mustache';
-import path from 'path';
-import ROUTES from '../../src/routes';
+import { Route } from '../models/Route';
+import { RouteMatch } from '../models/RouteMatch';
+import { DEFAULT_OUTLET } from '../utils/DefaultOutlet';
 
-export type RouteMatch = {
-    route: any,
-    isMatch?: boolean,
-    result: any
-}
+export class Router {
 
-export type Route = {
-    path: string,
-    view: any
-}
+    routerTree: Route[];
+    routerState: any;
+    activeRoute: any;
 
-export async function router(data?: any) {
-    // if (data) { console.log("data passed to update view : ", data) }
-    const potentialMatches = ROUTES.map((route): RouteMatch => {
-        return {
-            route: route,
-            result: location.pathname.match(pathToRegex(route.path))
-        };
-    });
+    url: string;
+    path: string;
 
-    let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
+    routerHistory: any;
 
-    if (!match) {
-        match = {
-            route: null,
-            isMatch: false,
-            result: null
-        };
-    } else {
-        match.isMatch = true;
+    constructor(ROUTES: Route[]) {
+        this.routerTree = ROUTES;
+        this.activeRoute = {};
+        this.routerHistory = [];
+        this.routerState = {};
+        this.url = window.location.href;
+        this.path = window.location.pathname;
     }
 
-    console.log(match);
+    init() {
+        console.warn("Router initiated");
+    }
 
-    if (match.isMatch) {
-        const view: Component = new match.route.view(getParams(match));
+    routerInit(data?: any): any {
 
-        console.log(view);
+        console.log("Path : ", this.path);
 
-        var rendered = Mustache.render(await view.view(), data ? data : await view.state());
+        let match = this.potentialMatch();
 
-        document.querySelectorAll('router-out').forEach((routerOut: any) => {
-            routerOut.innerHTML = rendered;
+        if (!match) {
+            match = {
+                route: null,
+                isMatch: false,
+                result: null
+            };
+        } else {
+            match.isMatch = true;
+        }
+
+        console.log(match);
+
+        if (match.isMatch) {
+            const view: Component = new match.route.view(this.getParams(match));
+
+            // var rendered = Mustache.render(view.view(), data ? data : view.state());
+
+            // document.querySelectorAll(DEFAULT_OUTLET.DEFAULT).forEach((routerOut: any) => {
+            //     routerOut.innerHTML = rendered;
+            // });
+
+            return [view, match.route.outlet ? match.route.outlet : DEFAULT_OUTLET.DEFAULT];
+        }
+        return null;
+    };
+
+    navigateByPath(path: string): any {
+        this.path = path;
+        return this.routerInit();
+    }
+
+    potentialMatch(): RouteMatch {
+        const potentialMatches = this.routerTree.map((route): RouteMatch => {
+            return {
+                route: route,
+                result: this.path.match(this.pathToRegex(route.path))
+            };
         });
-    }
-};
 
-export function pathToRegex(path: string): RegExp {
-    return new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+        return potentialMatches.find(potentialMatch => potentialMatch.result !== null);
+    }
+
+
+    pathToRegex(path: string): RegExp {
+        return new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+    }
+
+    getParams(match: RouteMatch) {
+        if (match.result) {
+            const values = match.result.slice(1);
+            const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map((result: any) => result[1]);
+            return Object.fromEntries(keys.map((key, i) => {
+                return [key, values[i]];
+            }));
+        }
+    };
 }
-
-export function getParams(match: RouteMatch) {
-    if (match.result) {
-        const values = match.result.slice(1);
-        const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map((result: any) => result[1]);
-        return Object.fromEntries(keys.map((key, i) => {
-            return [key, values[i]];
-        }));
-    }
-};

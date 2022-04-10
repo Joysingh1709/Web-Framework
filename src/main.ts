@@ -1,13 +1,7 @@
 import CoreFramework from '../lib/core/core';
+import ROUTES from '../src/routes';
 import './app.css';
-import { router } from "../lib/router/Router";
-new CoreFramework().init();
-window.addEventListener("popstate", (e: any) => {
-    console.log("popstate", e);
-    router();
-});
+import './bootstrap.css';
+import { Components } from './Declarations';
 
-console.log(window.history.state);
-// .addEventListener('navigate', (e: any) => {
-//     console.log("navigate", e);
-// });
+new CoreFramework(Components).init(ROUTES);

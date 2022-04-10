@@ -3,5 +3,6 @@ export type Props = {
     type: String,
     propId: String,
     valueName: String,
-    params: String[]
+    params: String[],
+    fn: any
 }

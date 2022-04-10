@@ -1,0 +1,2 @@
+export const pseudoClassList: string[] = [":hover", ":active", ":focus", ":visited", ":link", ":disabled", ":enabled", ":checked", ":indeterminate", ":in-range",
+    ":out-of-range", ":read-only", ":read-write", ":required", ":optional", ":invalid", ":valid"];

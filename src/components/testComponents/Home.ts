@@ -1,16 +1,6 @@
-import { Component } from "../../lib/models/Component";
+import { Component } from "../../../lib/models/Component";
 
 export default function Home(): Component {
-    // function makeid(length: number): string {
-    //     var result = '';
-    //     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    //     var charactersLength = characters.length;
-    //     for (var i = 0; i < length; i++) {
-    //         result += characters.charAt(Math.floor(Math.random() *
-    //             charactersLength));
-    //     }
-    //     return result;
-    // }
     const state = {
         title: "My Web Framework",
         data: ["foo", "bar", "ipsom"],

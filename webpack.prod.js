@@ -7,8 +7,6 @@ const TerserPlugin = require("terser-webpack-plugin");
 var HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-console.log("webpack.prod.js");
-
 module.exports = merge(common, {
     mode: 'production',
     output: {
@@ -34,9 +32,11 @@ module.exports = merge(common, {
     devServer: {
         contentBase: path.join(__dirname, 'dist'),
         publicPath: '/',
+        compress: true,
         watchContentBase: true,
         historyApiFallback: true,
-        port: 3010
+        compress: true,
+        port: 8080
     },
     plugins: [
         new MiniCssExtractPlugin({ filename: "[name].[contenthash].css" }),
