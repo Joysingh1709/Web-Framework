@@ -3,4 +3,4 @@ export type Component = {
     view: () => string;
     state: () => any;
     style: () => string;
-}
+};

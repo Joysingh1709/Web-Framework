@@ -5,7 +5,6 @@ import { RouteMatch } from '../models/RouteMatch';
 import { DEFAULT_OUTLET } from '../utils/DefaultOutlet';
 
 export class Router {
-
     routerTree: Route[];
     routerState: any;
     activeRoute: any;
@@ -25,12 +24,11 @@ export class Router {
     }
 
     init() {
-        console.warn("Router initiated");
+        console.warn('Router initiated');
     }
 
     routerInit(data?: any): any {
-
-        console.log("Path : ", this.path);
+        console.log('Path : ', this.path);
 
         let match = this.potentialMatch();
 
@@ -38,13 +36,13 @@ export class Router {
             match = {
                 route: null,
                 isMatch: false,
-                result: null
+                result: null,
             };
         } else {
             match.isMatch = true;
         }
 
-        console.log(match);
+        // console.log(match);
 
         if (match.isMatch) {
             const view: Component = new match.route.view(this.getParams(match));
@@ -55,10 +53,15 @@ export class Router {
             //     routerOut.innerHTML = rendered;
             // });
 
-            return [view, match.route.outlet ? match.route.outlet : DEFAULT_OUTLET.DEFAULT];
+            return [
+                view,
+                match.route.outlet
+                    ? match.route.outlet
+                    : DEFAULT_OUTLET.DEFAULT,
+            ];
         }
         return null;
-    };
+    }
 
     navigateByPath(path: string): any {
         this.path = path;
@@ -69,25 +72,32 @@ export class Router {
         const potentialMatches = this.routerTree.map((route): RouteMatch => {
             return {
                 route: route,
-                result: this.path.match(this.pathToRegex(route.path))
+                result: this.path.match(this.pathToRegex(route.path)),
             };
         });
 
-        return potentialMatches.find(potentialMatch => potentialMatch.result !== null);
+        return potentialMatches.find(
+            (potentialMatch) => potentialMatch.result !== null
+        );
     }
 
-
     pathToRegex(path: string): RegExp {
-        return new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+        return new RegExp(
+            '^' + path.replace(/\//g, '\\/').replace(/:\w+/g, '(.+)') + '$'
+        );
     }
 
     getParams(match: RouteMatch) {
         if (match.result) {
             const values = match.result.slice(1);
-            const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map((result: any) => result[1]);
-            return Object.fromEntries(keys.map((key, i) => {
-                return [key, values[i]];
-            }));
+            const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
+                (result: any) => result[1]
+            );
+            return Object.fromEntries(
+                keys.map((key, i) => {
+                    return [key, values[i]];
+                })
+            );
         }
-    };
+    }
 }

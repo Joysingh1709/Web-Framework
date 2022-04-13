@@ -1,8 +1,8 @@
 export type Props = {
-    name: String,
-    type: String,
-    propId: String,
-    valueName: String,
-    params: String[],
-    fn: any
-}
+    name: string;
+    type: string;
+    propId: string;
+    valueName: string;
+    params: string[];
+    fn: any;
+};
