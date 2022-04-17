@@ -1,5 +1,4 @@
 import { Component } from 'lib/models/Component';
-import Mustache from 'mustache';
 import { Route } from '../models/Route';
 import { RouteMatch } from '../models/RouteMatch';
 import { DEFAULT_OUTLET } from '../utils/DefaultOutlet';

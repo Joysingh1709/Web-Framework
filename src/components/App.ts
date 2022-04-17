@@ -7,7 +7,7 @@ export default function App(): Component {
         selector: 'app-root',
         view: () => /*html*/ `
         <app-nav></app-nav>
-        <app-button></app-button>
+        <router-out></router-out>
         `,
         style: () => /*css*/ ``,
         state: () => state,

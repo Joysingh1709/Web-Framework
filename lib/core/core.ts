@@ -42,17 +42,15 @@ export default class CoreFramework {
     init(routes: Route[]): void {
         window.addEventListener('popstate', (e: any) => {
             // router();
-            // this.router.
-            console.log('call Router.router() on popstate : ', e);
+            console.log('call Router.router() on popstate : ', e.target.location.href);
+            console.log('on global window object : ', window.location.href);
+            this.navigateTo(
+                e.target.location.href.replace(window.location.origin, '')
+            );
         });
 
         document.addEventListener('DOMContentLoaded', () => {
             console.log('Dom Loaded');
-
-            // this.addListenersToElements();
-            // document.body.addEventListener('change', (e: any) => {
-            //     console.log('change event : ', e);
-            // });
 
             this.createElements();
 
@@ -246,11 +244,13 @@ export default class CoreFramework {
             return o;
         };
 
+        console.log('prop arr : ', this.propsArr);
+
         this.propsArr.forEach((p: Props) => {
             if (p.type === 'onchange') {
                 const element = document.querySelector('[' + p.propId + ']');
                 if (element) {
-                    element.addEventListener('keyup', (e: any) => {
+                    element.addEventListener('change', (e: any) => {
                         if (p.params.length > 0) {
                             const paramsValArr = p.params.map(
                                 (param: string) => {
@@ -287,6 +287,37 @@ export default class CoreFramework {
                             }
                         }
                     });
+                }
+            }
+            if (p.type === 'bind') {
+                const element = document.querySelector('[' + p.propId + ']');
+                if (element) {
+                    for (let i = 0; i < element.attributes.length; i++) {
+                        const at = element.attributes.item(i);
+                        if (at.name.includes('_hy-model_')) {
+                            element.addEventListener('keyup', (e: any) => {
+                                if (p.fn !== undefined) {
+                                    const keys = Object.keys(this.componentNodes);
+
+                                    let sel = keys.map((key) => {
+                                        if (this.componentNodes[key].includes(at.name)) {
+                                            return key;
+                                        } else {
+                                            return null;
+                                        }
+                                    });
+                                    sel = sel.filter((v) => v);
+                                    const c = this.components.declarations.find(
+                                        (r: Component) => r.selector === sel[0]
+                                    );
+                                    if (typeof c.state()[p.valueName] !== 'function') {
+                                        // setting new value to the binded property
+                                        c.state()[p.valueName] = e.target.value;
+                                    } else throw new Error('Cannot bind function');
+                                }
+                            });
+                        }
+                    }
                 }
             }
         });
@@ -389,6 +420,8 @@ export default class CoreFramework {
                 const props = e.properties;
                 for (const key in props) {
                     if (Object.prototype.hasOwnProperty.call(props, key)) {
+
+                        // on click event binding
                         if (
                             props.hasOwnProperty('(onclick)') &&
                             key === '(onclick)'
@@ -423,6 +456,53 @@ export default class CoreFramework {
                             e.properties[newProp.propId as string] = '';
 
                         }
+
+                        // two way property binding with event name : 'bind'
+                        if (
+                            props.hasOwnProperty('(bind)') &&
+                            key === '(bind)'
+                        ) {
+                            const element = props[key];
+
+                            // remove the property name from {} brackets
+                            const propertyName = element.substring(
+                                element.indexOf('{') + 1,
+                                element.indexOf('}')
+                            ).trim();
+
+                            const args = element.substring(
+                                element.indexOf('(') + 1,
+                                element.indexOf(')')
+                            );
+
+                            if (r.state()[propertyName] !== undefined) {
+                                console.log('Binding propertyName : ', propertyName);
+                                const argsArray = args.split(',');
+                                const modelId = '_hy-model_' + new UUID().generate();
+                                this.componentNodes[r.selector] ? this.componentNodes[r.selector].push(modelId) : this.componentNodes[r.selector] = [modelId];
+                                const newProp: Props = {
+                                    type: 'bind',
+                                    name: propertyName,
+                                    propId: modelId,
+                                    valueName: propertyName,
+                                    params: argsArray.map((a: string) =>
+                                        r.state()[a.trim()] ? r.state()[a.trim()] : a
+                                    ),
+                                    fn: r.state()[propertyName],
+                                };
+
+                                this.propsArr.push(newProp);
+
+                                delete e.properties[key];
+                                e.properties[newProp.propId as string] = '';
+                            }
+                            else {
+                                throw new Error('Cannot find property : ' + propertyName);
+                            }
+
+                        }
+
+                        // on change event binding
                         if (
                             props.hasOwnProperty('(onchange)') &&
                             key === '(onchange)'
@@ -647,6 +727,11 @@ export default class CoreFramework {
 
         this.setState(data, r, doc);
 
+        if (r.componentInit) {
+            console.log('Calling Component Init : ', r.componentInit);
+            r.componentInit();
+        }
+
         // adding comp tree without rendering mustache tags
         this.unRenderedcompTree.push(tree);
 
@@ -785,6 +870,11 @@ export default class CoreFramework {
                         // console.log('setting value of ' + key + ': ', newValue);
                         internalValue = newValue;
 
+                        // if (r.componentInit) {
+                        //     console.log('Calling Component Init : ', r.componentInit);
+                        //     r.componentInit();
+                        // }
+
                         // renderUpdatedComponent(c, r.selector, data);
 
                         this.outletCompTree = unRenderedcompTree.find(
@@ -847,30 +937,27 @@ export default class CoreFramework {
                             }
                         );
 
+
+                        // comparison of the two DOM trees i.e old and new tree
                         const newNodes: any[] = [];
                         const oldNodes: any[] = [];
 
                         const checNewNodes = (node: any) => {
                             node.querySelectorAll('*').forEach(
                                 (n: any, idx: number) => {
-                                    // console.log('node : ', n);
                                     newNodes.push(n);
                                 }
                             );
                         };
                         const checOldNodes = (node: any) => {
-
                             node.querySelectorAll('*').forEach(
                                 (n: any, idx: number) => {
-                                    // console.log('node : ', n);
                                     oldNodes.push(n);
                                 }
                             );
                         };
 
                         // console.log('Outlet Comp Tree : ', this.outletCompTree);
-
-                        // console.log('To Append : ', toH(h, this.outletCompTree, { space: 'html', }));
 
                         checNewNodes(toH(h, this.outletCompTree, { space: 'html', }));
 
@@ -887,28 +974,10 @@ export default class CoreFramework {
                             for (let i = 0; i < oldNodes.length; i++) {
                                 if (!oldNodes[i].isEqualNode(newNodes[i])) {
                                     console.log('node is not equal : ', oldNodes[i], newNodes[i]);
-                                    oldNodes[i].parentNode.replaceChild(newNodes[i], oldNodes[i]);
+                                    oldNodes[i].parentNode.replaceChild(newNodes[i].cloneNode(true), oldNodes[i]);
                                 }
                             }
                         }
-
-                        // document
-                        //     .querySelectorAll(r.selector)
-                        //     .forEach((componentOut: any) => {
-                        //         console.log(
-                        //             'component Outlet : ',
-                        //             componentOut
-                        //         );
-                        //         // componentOut.innerHTML = toH(
-                        //         //     h,
-                        //         //     this.outletCompTree,
-                        //         //     {
-                        //         //         space: 'html',
-                        //         //     }
-                        //         // ).innerHTML;
-                        //     });
-
-                        // updateTemplate(r.selector, html, data);
 
                         dep.notify();
                     },
