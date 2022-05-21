@@ -1,6 +1,11 @@
-import { Component } from "./Component";
+import { Component } from './Component';
+
+// export interface ComponentRegistry {
+//     declarations: Component[],
+//     bootStrap: Component
+// }
 
 export interface ComponentRegistry {
-    declarations: Component[],
-    bootStrap: Component
+    declarations: Function[];
+    bootStrap: Function;
 }

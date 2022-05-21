@@ -19,7 +19,9 @@
         "@types/debug": "^4.1.7",
         "@types/node": "^16.11.6",
         "csso": "^4.2.0",
-        "debug": "^2.6.9"
+        "debug": "^2.6.9",
+        "diff-dom": "^4.2.3",
+        "list-diff2": "^0.1.4"
     },
     "devDependencies": {
         "@types/hyperscript": "^0.0.4",

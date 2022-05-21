@@ -2,14 +2,13 @@ import { Component } from '../../../lib/models/Component';
 import CustomEvent from '../../../lib/core/CustomEvent';
 
 export default function Nav(): Component {
-
     const customEvent = new CustomEvent();
 
     const componentInit = () => {
-        customEvent.setEvent('nav-click', (e) => {
+        customEvent.setEvent('nav-click', e => {
             console.log(e);
         });
-    }
+    };
 
     const state = {
         checkInpVal: (val: any) => {
@@ -24,17 +23,17 @@ export default function Nav(): Component {
         btnText: 'Check Value',
         inputChange: (e: any) => {
             state.inputVal = e.target.value;
-            state.inputVal ? state.count++ : state.count = 0;
+            state.inputVal ? state.count++ : (state.count = 0);
         },
-        inputVal: "",
+        inputVal: '',
         toggleBtnText: () => {
             console.log('toggle btn text');
             state.btnText = state.btnText === 'Check Value' ? 'Clicked' : 'Check Value';
-        }
+        },
     };
 
     const catchEvent = () => {
-        customEvent.setEvent('checkInpVal', (e) => {
+        customEvent.setEvent('checkInpVal', e => {
             console.log(e);
         });
     };
@@ -68,11 +67,11 @@ export default function Nav(): Component {
 
             <h2 >Two way data binding : </h2>
 
-            <input type="text" name="input" (bind)="{inputVal}">
+            <input type="text" name="input" (onChange)="{inputChange($event)}" (bind)="{inputVal}">
             <!-- (onChange)="{inputChange($event)}"  -->
             <p>{{inputVal}}</p>
 
-            <p>{{count}}</p>
+            <p>Change event check count : {{count}}</p>
 
             <button type="button" (onClick)="{checkInpVal(inputVal)}" class="btn btn-primary">{{btnText}}</button>
 
@@ -94,6 +93,6 @@ export default function Nav(): Component {
                 margin: 20px;
             }`,
         state: () => state,
-        componentInit
+        componentInit,
     };
 }

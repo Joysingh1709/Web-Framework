@@ -1,47 +1,38 @@
 import { Component } from '../../lib/models/Component';
-import CustomEvent from '../../lib/core/CustomEvent';
 
 export default function Parent(): Component {
+    const componentInit = () => {};
 
-    const customEvent = new CustomEvent();
-
-    function foo(): number {
-        const a = 1;
-        const b = 2;
-        const addition = (a: number, b: number): number => {
-            return a + b;
-        }
-        const result = addition(a, b);
-        return result;
-    }
-
-    const componentInit = () => {
-        // console.log(scopeParser.parseFunction(foo));
-        // console.log(Scope(foo));
-        // console.log(parser.parse(foo.toString()));
-    }
+    const names = ['Johhn', 'Mark', 'Jane', 'Mary', 'John', 'Paul', 'Mary', 'Mark', 'Jane', 'John', 'Paul', 'Mary', 'Mark', 'Jane', 'John', 'Paul'];
 
     const state = {
         msg: 'Message from parent',
-        sendMessage: (): CustomEvent => {
-            console.log('send message');
-            customEvent.triggerEvent('childEvent', { message: state.msg });
-            return customEvent;
-        }
+        names: [''],
+        changeProp: () => {
+            state.msg = names[Math.floor(Math.random() * names.length)];
+            // state.names = names;
+        },
     };
 
     return {
         selector: 'app-parent',
         view: () => {
             return /*html*/ `
-            <p>Parent component works</p>
-            <button class="btn btn-primary" type="button" (onClick)="{sendMessage()}">Send message</button>
-            <app-child></app-child>
+            <p>Parent component works ---- {{msg}}</p>
+            <!-- <button class="btn btn-primary" type="button" (onClick)="{sendMessage()}">Send message</button> -->
+            <button (onClick)="{changeProp()}" class="btn btn-primary">Change Prop</button>
+            <p>Method 1 : by binding property with event</p>
+            <app-child [list]="{names}" [childEvent]="{msg}"></app-child>
+
+            <hr>
+
+            <!-- <p>Method 2 : using (emit)</p> -->
+            <!-- <app-child (emit)="{method()}" ></app-child> -->
             `;
         },
         style: () => /*css*/ `
         `,
         state: () => state,
-        componentInit
+        componentInit,
     };
 }
