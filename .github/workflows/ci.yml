@@ -1,1 +1,22 @@
-
+name: CI Workflow
+run-name: ${{ github.actor }} initiated CI Workflow 🚀
+on: [push]
+jobs:
+  Create-Framework-Release:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server, by ${{ github.actor }}!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: get-package-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        with:
+            path: packages/framework
+      - run: echo "🎉 The Package Release version is - ${{ steps.package-version.outputs.current-version}}."
