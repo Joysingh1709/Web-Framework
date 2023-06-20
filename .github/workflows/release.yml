@@ -1,0 +1,31 @@
+name: "Create Framework Release"
+
+on:
+  pull_request:
+  push:
+    branches:         # array of glob patterns matching against refs/heads. Optional; defaults to all
+      - master          # triggers on pushes that contain changes in main
+
+jobs:
+  build:
+    name: Create Framework Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - run: echo "$(cat ./package.json)" | jq '.version' | xargs -I {} echo "PackageVersion="{} >> $GITHUB_ENV
+      - run: echo "🎉 The Package Release version is - ${{ env.PackageVersion }}."
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ env.PackageVersion }}
+          release_name: Release v${{ env.PackageVersion }}
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: false
+          prerelease: false
