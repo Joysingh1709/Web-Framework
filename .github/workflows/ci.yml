@@ -14,9 +14,5 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
-      - name: get-package-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
-        with:
-            path: ${{ github.workspace }}
-      - run: echo "🎉 The Package Release version is - ${{ steps.package-version.outputs.current-version}}."
+      - run: echo "$(cat ./package.json)" | jq '.version' | xargs -I {} echo "NodeVersion="{} >> $GITHUB_ENV
+      - run: echo "🎉 The Package Release version is - ${{ env.NodeVersion }}."
